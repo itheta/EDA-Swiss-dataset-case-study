@@ -1,0 +1,1211 @@
+---
+title: "Exploratory data analysis of Swiss Dataset"
+author: "Aritra Biswas"
+date: "6 April 2016"
+output:
+  pdf_document: default
+  html_document: default
+geometry: margin=.75in
+fontsize: 11pt
+---
+###__Data Set:__
+
+Swiss Fertility and Socioeconomic Indicators (1888) Data
+
+### __Description:__
+
+Standardized fertility measure and socio-economic indicators for each of 47 French-speaking provinces of Switzerland at about 1888.
+
+### __Format:__ 
+A data frame with 47 observations on 6 variables, each of which is in percent, i.e., in [0, 100].
+
+__Fertility		:__	Ig, 'common standardized fertility measure'
+
+
+__Agriculture		:__	 % of males involved in agriculture as occupation
+
+
+__Examination		:__	 % draftees receiving highest mark on army examination
+
+
+__Education		:__	 % education beyond primary school for draftees.
+
+
+__Catholic		:__	 % 'catholic' (as opposed to 'protestant').
+
+
+__Infant.Mortality	:__	 live births who live less than 1 year.
+
+
+
+
+
+
+All variables but 'Fertility' give proportions of the population.
+
+### __Source:__
+
+Project "16P5"", pages 549-551 in
+
+Mosteller, F. and Tukey, J. W. (1977) Data Analysis and Regression: A Second Course in Statistics. Addison-Wesley, Reading Mass.
+
+indicating their source as "Data used by permission of Franice van de Walle. Office of Population Research, Princeton University, 1976. Unpublished data assembled under NICHD contract number No 1-HD-O-2077.""
+
+Here we show the data type of each variable by using __str()__ function from base package in R. The variable with int data type are of the format of discrete and others are continuous. 
+
+```{r,echo=F}
+str(swiss)
+```
+\newpage
+```{r , echo=F,eval=F, fig.width=8, fig.height=5.5}
+# 
+# #Setting plotting planel to output one graph.
+# par(mfrow=c(1,1))
+# 
+# #boxplot of the variables of the swiss dataset.
+# boxplot(swiss,
+#         col = "white", 
+#         ylab ="Variable value in % ",
+#         xlab="Variable name",
+#         outcol="red",
+#         outpch=19)
+```
+__A shortnote on Boxplot:__
+
+The box plot presents five sample statistics: 
+
+1) the minimum, 
+
+2) the lower quartile, 
+
+3) the median, 
+
+4) the upper quartile 
+
+5) the maximum
+
+The length of the box is thus the interquartile range of the sample.
+A line is drawn across the box at the sample median. Whiskers sprout from the two ends of the box until they reach the sample maximum and minimum.
+The box length gives an indication of the sample variability and the line across the box shows where the sample is centered. The position of the box in its whiskers and the position of the line in the box also tells us whether the sample is symmetric or skewed, either to the right or left. For a symmetric distribution, long whiskers, relative to the box length, can betray a heavy tailed population and short whiskers, a short tailed population. So, provided the number of points in the sample is not too small, the box plot also gives us some idea of the "shape" of the sample, and by implication, the shape of the population from which it was drawn.
+
+
+__Application of boxplot:__
+
+a) Indicator of Centrality
+b) Indicator of Spread
+c) Indicator of Symmetry
+d) Indicator of Tail Length
+e) Outlier
+
+One definition of outlier is any data point more than 1.5 interquartile ranges (IQRs) below the first quartile or above the third quartile.
+
+__Residual:__ The difference between the predicted value (based on the regression equation) and the actual, observed value.
+
+__Outlier:__ In linear regression, an outlier is an observation with large residual. In other words, it is an observation whose dependent-variable value is unusual given its value on the predictor variables. An outlier may indicate a sample peculiarity or may indicate a data entry error or other problem.
+
+__Leverage:__ An observation with an extreme value on a predictor variable is a point with high leverage. Leverage is a measure of how far an independent variable deviates from its mean. High leverage points can have a great amount of effect on the estimate of regression coefficients.
+
+__Influence:__ An observation is said to be influential if removing the observation substantially changes the estimate of the regression coefficients.  Influence can be thought of as the product of leverage and outlierness.
+
+__Cook's distance (or Cook's D):__ A measure that combines the information of leverage and residual of the observation.
+
+__Histogram with a Normal Distribution Fit:__
+
+A histogram dissects the range of the variable into equal-width class intervals called bins and then plots the number of observations falling in each bin as a bar chart (i.e. the height of the bar represents the number, proportion or percentage of observations in that class). 
+
+The normal distribution is a commonly used distribution for continuous variables with many convenient properties, so let’s try to fit the normal distribution to this data and examine if it is consistent with the histogram.
+
+__Stem and leaf plot:__  A Stem and Leaf Plot is a special table where each data value is split into a "stem" (the first digit or digits) and a "leaf" (usually the last digit). A stem and leaf plot generally helps in studying that where the majority of the values of the variable lie , like around what range of values in the x-axis. They are also useful for highlighting outliers and finding the mode. However, stem-and-leaf displays are only useful for moderately sized data sets (around 15-150 data points). 
+
+__QQ plot:__     Normal q-q plot gives the idea of the relationship between the theoretical quantiles of the data and sample quantiles of the data. 
+
+__Test for population correlation coefficients:__
+
+In cases such as these, we answer our research question concerning the existence of a linear relationship by using the t-test for testing the population correlation coefficient $H_0: \rho = 0.$
+
+__Null hypothesis:__ $H_0: \rho = 0$
+__Alternative hypothesis:__ $H_A: \rho \ne 0$ or $H_A: \rho < 0$ or $H_A: \rho > 0$
+
+
+__Test Statistic:__ $$t^{*}=\frac{ r \sqrt{n-2} }{\sqrt{ 1- r^{2} }}$$
+
+As always, the P-value is the answer to the question "how likely is it that we’d get a test statistic $t^*$ as extreme as we did if the null hypothesis were true?" The P-value is determined by referring to a t-distribution with n-2 degrees of freedom.
+
+
+Finally, we make a decision:
+
+
+If the P-value is smaller than the significance level $\alpha$, we reject the null hypothesis in favor of the alternative. We conclude "there is sufficient evidence at the $\alpha$ level to conclude that there is a linear relationship in the population between the predictor and response."
+
+
+If the P-value is larger than the significance level $\alpha$, we fail to reject the null hypothesis. We conclude "there is not enough evidence at the $\alpha$ level to conclude that there is a linear relationship in the population between the predictor and response."
+
+__Shapiro-Wilk Test: (Parametric Test)__
+
+$H_0:$ The samples come from a parent population with Normal distribution.
+
+$H_1:$ The samples do not come from a parent population with Normal distribution.
+
+
+The Shapiro-Wilk test is a test of normality. Null hypothesis checks whether the sample came from a normally distributed population. The test statistic is:
+
+$$W = {\left(\sum_{i=1}^n a_i x_{(i)}\right)^2 \over \sum_{i=1}^n (x_i-\overline{x})^2}$$
+
+where $x_{(i)}$ (with parentheses enclosing the subscript index i) is the ith order statistic, i.e., the ith-smallest number in the sample;
+
+$\bar{x} = \left( x_1 + \cdots + x_n \right)/n$ is the sample mean;
+
+the constants $a_i$ are given by $(a_1,\dots,a_n) = {m^{\mathsf{T}} V^{-1} \over (m^{\mathsf{T}} V^{-1}V^{-1}m)^{1/2}}$ where $m = (m_1,\dots,m_n)^{\mathsf{T}}\,$ and $m_1,\ldots,m_n$ are the expected values of the order statistics of independent and identically distributed random variables sampled from the standard normal distribution, and V is the co variance matrix of those order statistics.
+The user may reject the null hypothesis if W is below a predetermined threshold.
+
+__For the Shapiro-Wilk statistic:__
+
+* If p is more than .05 {$\alpha$}, we can be 95% {$(1-\alpha)100\%$} certain that the data are normally distributed. (In other words, we fail to reject the null hypothesis.) 
+
+* If p is less than .05 {$\alpha$}, we can be 95% {$(1-\alpha)100\%$} certain that the data are not normally distributed. (In other words, we reject the null hypothesis.) 
+
+__Kolmogorov-Smirnov test (nonparametric test):__
+
+The Kolmogorov-Smirnov test is defined by:
+
+__$H_0$:__	The data follow a specified distribution. (Normal in this case)
+
+
+__$H_1:$__	The data do not follow the specified distribution. (Normal in this case)
+
+
+__Test Statistic:__	The Kolmogorov-Smirnov test statistic is defined as
+__$$D_n= \sup_x |F_n(x)-F(x)|)$$__
+
+where F is the theoretical cumulative distribution of the distribution being tested which must be a continuous distribution (i.e., no discrete distributions such as the binomial or Poisson), and it must be fully specified (i.e., the location, scale, and shape parameters cannot be estimated from the data).
+
+
+__Significance Level:__	$\alpha$
+
+
+__Critical Values:__	The hypothesis regarding the distributional form is rejected if the test statistic, D, is greater than the critical value.
+
+
+
+__Test for population correlation coefficients:__
+
+In cases such as these, we answer our research question concerning the existence of a linear relationship by using the t-test for testing the population correlation coefficient $H_0: \rho = 0.$
+
+__Null hypothesis:__ $H_0: \rho = 0$
+
+__Alternative hypothesis:__ $H_A: \rho \ne 0$ or $H_A: \rho < 0$ or $H_A: \rho > 0$
+
+
+__Test Statistic:__ $$t^{*}=\frac{ r \sqrt{n-2} }{\sqrt{ 1- r^{2} }}$$
+
+As always, the P-value is the answer to the question "how likely is it that we’d get a test statistic $t^*$ as extreme as we did if the null hypothesis were true?" The P-value is determined by referring to a t-distribution with n-2 degrees of freedom.
+
+
+Finally, we make a decision:
+
+
+If the P-value is smaller than the significance level $\alpha$, we reject the null hypothesis in favor of the alternative. We conclude "there is sufficient evidence at the $\alpha$ level to conclude that there is a linear relationship in the population between the predictor and response."
+
+
+If the P-value is larger than the significance level $\alpha$, we fail to reject the null hypothesis. We conclude "there is not enough evidence at the $\alpha$ level to conclude that there is a linear relationship in the population between the predictor and response."
+
+__Scatter Diagrams and Regression Lines__
+
+__Scatter Diagrams__
+
+If data is given in pairs then the scatter diagram of the data is just the points plotted on the xy-plane.  
+The scatter plot is used to visually identify relationships between the first and the second entries of paired data.
+
+
+If the points follow a linear pattern , then we say that there is a high linear correlation, while if the points do not follow a linear pattern, it is said to be there is no linear correlation. If the data somewhat follow a linear path, then we say that there is a moderate linear correlation.
+
+Things which can be explored from scatter plot are:
+
+a) Direction
+
+b) Form
+
+c) Strength
+
+d) Outliers and Influntial Points
+
+### __For variable Fertility:__
+
+```{r,eval=F}
+attach(swiss)
+print(paste("Mean of Fertility:",paste(mean(Fertility), collapse=" ")))
+print(paste("SD of Fertility:",paste(sd(Fertility), collapse=" ")))
+print(paste("Median of Fertility:",paste(median(Fertility), collapse=" ")))
+print(paste("IQR of Fertility:",paste(IQR(Fertility), collapse=" ")))
+print(paste("Maximum of Fertility:",paste(max(Fertility), collapse=" ")))
+print(paste("Minimum of Fertility:",paste(min(Fertility), collapse=" ")))
+print(paste("Outliers in Fertility:",paste(boxplot.stats(Fertility)$out, collapse=" ")))
+```
+
+__Descriptive Statistics__
+
+* Mean of Fertility: 70.1
+* SD of Fertility: 12.49
+* Median of Fertility: 70.4
+* IQR of Fertility: 13.7
+* Maximum of Fertility: 92.5
+* Minimum of Fertility: 35
+* Outliers in Fertility: 35, 42.8
+
+__Stem-and-Leaf plot of Fertility__
+```{r,echo=F}
+stem(swiss$Fertility)
+```
+A stem and leaf plot generally helps in studying that where the majority of the values of the variable lie , like around what range of values in the x-axis. 
+
+Thus we can observe that large amount of the values lies in the 50-60 range . Also we can then infer that within the range 30-100 the maximum values lies almost in the middle part and hence the data comes from the normal population.
+
+
+
+```{r,echo=F,eval=F}
+#Dataset after removal of outliers from dataset
+library(dplyr)
+swiss.nout<-swiss%>%
+  filter(Fertility<=max(boxplot.stats(swiss$Fertility)$stats),Fertility>=min(boxplot.stats(swiss$Fertility)$stats))%>%
+  filter(Education<=max(boxplot.stats(swiss$Education)$stats),Education>=min(boxplot.stats(swiss$Education)$stats))%>%
+  filter(Infant.Mortality<=max(boxplot.stats(swiss$Infant.Mortality)$stats),Infant.Mortality>=min(boxplot.stats(swiss$Infant.Mortality)$stats))
+
+```
+
+__Visualization:__
+
+```{r,fig.width=8, fig.height=6}
+par(mfrow=c(2,2))
+#Locading dataset in R
+attach(swiss)
+
+#Plotting variable Fertility in Boxplot
+boxplot(Fertility,
+        col = "white", 
+        main="Boxplot of variable Fertility:",
+        ylab ="Variable value in % ",
+        xlab="Variable name",
+        outcol="red",
+        outpch=19)
+
+#Histogram of Fertility variable from swiss dataset with fitted normal density curve
+
+h1<-hist(swiss$Fertility,col="antiquewhite3",main="Histogram of Fertility",xlab="Fertility");
+xfit<-seq(min(swiss$Fertility),max(swiss$Fertility),length=40) 
+yfit<-dnorm(xfit,mean=mean(swiss$Fertility),sd=sd(swiss$Fertility)) 
+yfit <- yfit*diff(h1$mids[1:2])*length(swiss$Fertility) 
+lines(xfit, yfit, col="black", lwd=2)
+
+
+#QQ plot of the variable Fertility
+qqnorm(swiss$Fertility,
+       pch=16,
+       main="Normal QQ-plot of Fertility",
+       xlab="Sample quantiles of Fertility",
+       ylab="Theoretical quantiles");
+qqline(swiss$Fertility, col = 2);
+
+
+#Plotting of the variable Fertility with respect to its index.
+plot(Fertility, main="Fertility")
+```
+
+
+__Histogram:__ The histogram with the density curve of Fertility clearly shows that maximum frequency of the values lie  slightly towards right and thus the variable 
+is nearly skewed and so the data is from normal population. Also the bars are not much outside the density curve.  
+  
+__Boxplot:__ From this boxplot we can interpret that the variable Fertility is slightly left skewed which we can comment as nearly symmetric, the values of variables are not that dispersed because the length of the two ends of the whiskers is almost equal and the median also lie  almost in the centre . And also two of the values are extremely small and thus lie outside of the plot which are denoted by the red dots in the plot.  
+  
+__QQ Plot:__ The above QQ plot clearly shows that most of the values lies above the normal line but more or less close to it. So we can interpret that the data is surely from a normal distribution.
+
+
+__Outliers:__ From the plot of values with index, this can be shown that there are some values away from the data cloud. The boxplot confirms that the values are outlier. 
+
+\newpage
+
+__Hypothesis testing:__
+
+__Kolmogorov-Smirnov test (Nonparametric test):__
+
+```{r, eval=F}
+ks.test(swiss$Fertility,"pnorm",mean(swiss$Fertility),sd(swiss$Fertility))
+```
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrr}
+  \hline
+ & D & p-value \\ 
+  \hline
+  & 0.10 & 0.72 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+
+* The observed value of the Kolmogorov-Smirnov test statistic is:	D = 0.10
+
+* The exact probability of the observed value, D = 0.10,   p-value = 0.72
+
+* For the Fertility,   p-value = 0.72, which is greater than .05. 
+
+__Shapiro-Wilk normality test(Parametric test):__
+
+```{r, eval=F}
+shapiro.test(swiss$Fertility)
+```
+
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrr}
+  \hline
+ & W & p-value \\ 
+  \hline
+  & 0.97 & 0.34 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+* The observed value of the Shapiro-Wilk statistic is:	W = 0.97307
+
+* The exact probability of the observed value, W = 0.97307, p-value = 0.3449
+
+* For the Fertility, p = 0.3449, which is greater than .05. 
+
+__The parent population is normally distributed.__
+
+\newpage
+
+###__For variable Agriculture:__
+
+```{r,eval=F,echo=F}
+attach(swiss)
+print(paste("Mean of Fertility:",paste(mean(Agriculture), collapse=" ")))
+print(paste("SD of Agriculture:",paste(sd(Agriculture), collapse=" ")))
+print(paste("Median of Agriculture:",paste(median(Agriculture), collapse=" ")))
+print(paste("IQR of Agriculture:",paste(IQR(Agriculture), collapse=" ")))
+print(paste("Maximum of Agriculture:",paste(max(Agriculture), collapse=" ")))
+print(paste("Minimum of Agriculture:",paste(min(Agriculture), collapse=" ")))
+print(paste("Outliers in Agriculture:",paste(boxplot.stats(Agriculture)$out, collapse=" ")))
+```
+
+__Descriptive Statistics__
+
+* Mean of Agriculture: 50.65
+* SD of Fertility: 22.71
+* Median of Agriculture: 54.1
+* IQR of Agriculture: 31.75
+* Maximum of Agriculture: 89.7
+* Minimum of Agriculture:  1.2
+
+
+__Stem-and-Leaf plot of Agriculture__
+```{r,echo=F}
+stem(swiss$Agriculture)
+```
+
+
+Thus we can observe that large amount of the values lies in the  60 -70 range . Also we can then infer that within the range 0-100 the maximum values lie towards the right but still since the data is highly random so we can infer that data comes from the normal population.
+
+\newpage
+
+__Visualization:__
+
+```{r,echo=F, cache=FALSE ,warning=F, fig.width=8, fig.height=6}
+par(mfrow=c(2,2))
+#Locading dataset in R
+#Plotting variable Agriculture in Boxplot
+boxplot(Agriculture,
+        col = "white", 
+        main="Boxplot of variable Agriculture:",
+        ylab ="Variable value in % ",
+        xlab="Variable name",
+        outcol="red",
+        outpch=19)
+
+#Histogram of Agriculture variable from swiss dataset with fitted normal density curve
+
+h1<-hist(swiss$Agriculture,col="antiquewhite3",main="Histogram of Agriculture",xlab="Agriculture");
+xfit<-seq(min(swiss$Agriculture),max(swiss$Agriculture),length=40) 
+yfit<-dnorm(xfit,mean=mean(swiss$Agriculture),sd=sd(swiss$Agriculture)) 
+yfit <- yfit*diff(h1$mids[1:2])*length(swiss$Agriculture) 
+lines(xfit, yfit, col="black", lwd=2)
+
+
+#QQ plot of the variable Agriculture
+qqnorm(swiss$Agriculture,
+       pch=16,
+       main="Normal QQ-plot of Agriculture",
+       xlab="Sample quantiles of Agriculture",
+       ylab="Theoretical quantiles");
+qqline(swiss$Agriculture, col = 2);
+
+
+#Plotting of the variable Agriculture with respect to its index.
+plot(Agriculture,main="Agriculture")
+```
+
+
+__Histogram:__ The histogram with the density curve clearly shows that maximum frequency of the values lie far behind the density curve but the values follow a pattern like the normal variables i.e.first increasing and reaching the highest value and then descending and so the data is from normal population. 
+  
+__Boxplot:__ From this box plot we can interpret that the variable Agriculture is slightly left–skewed which we can comment as nearly symmetric, the values of variables are not that dispersed because the length of the two ends of the whiskers is almost equal and the median also lie  almost in the center . And the data of Agriculture does not contain any outlier.  
+  
+__QQ Plot:__  The above plot clearly shows that most of the values lies along the normal line with two or three values away from the line . So we can interpret that the data is surely from a normal distribution.
+
+
+__Outliers:__ There is not outlier in the variable under consideration.
+
+\newpage 
+
+__Hypothesis testing:__
+
+__Kolmogorov-Smirnov test (Nonparametric test):__
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrr}
+  \hline
+ & D & p-value \\ 
+  \hline
+  & 0.10 & 0.66 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+
+* The observed value of the Kolmogorov-Smirnov test statistic is:	D = 0.10314
+
+* The exact probability of the observed value, D = 0.10314, p-value = 0.6613
+
+* For the Agriculture, p-value = 0.6613, which is greater than .05. 
+
+__Shapiro-Wilk normality test(Parametric test):__
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrr}
+  \hline
+ & W & p-value \\ 
+  \hline
+  & 0.97 & 0.19 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+* The observed value of the Shapiro-Wilk statistic is:	W = 0.96643
+
+* The exact probability of the observed value, W = 0.96643, p-value = 0.193
+
+* For the Agriculture, p = 0.193, which is greater than .05. 
+
+__The parent population is normally distributed.__
+
+\newpage
+
+### __For variable Examination:__
+
+```{r,eval=F,echo=F}
+attach(swiss)
+print(paste("Mean of Fertility:",paste(mean(Examination), collapse=" ")))
+print(paste("SD of Examination:",paste(sd(Examination), collapse=" ")))
+print(paste("Median of Examination:",paste(median(Examination), collapse=" ")))
+print(paste("IQR of Examination:",paste(IQR(Examination), collapse=" ")))
+print(paste("Maximum of Examination:",paste(max(Examination), collapse=" ")))
+print(paste("Minimum of Examination:",paste(min(Examination), collapse=" ")))
+print(paste("Outliers in Examination:",paste(boxplot.stats(Examination)$out, collapse=" ")))
+```
+
+__Descriptive Statistics__
+
+* Mean of Examination: 16.48
+* Median of Examination: 16
+* SD of Examination: 7.97
+* IQR of Examination: 10
+* Maximum of Examination: 37
+* Minimum of Examination:  3
+
+
+__Stem-and-Leaf plot of Examination__
+```{r,echo=F}
+stem(swiss$Examination)
+```
+
+
+We can observe that large amount of the values lies in the  10-20 range and  the data is highly random so we can infer that data comes from the normal population.
+
+\newpage
+
+__Visualization:__
+
+```{r,echo=F, cache=FALSE ,warning=F, fig.width=8, fig.height=6}
+par(mfrow=c(2,2))
+#Locading dataset in R
+#Plotting variable Examination in Boxplot
+boxplot(Examination,
+        col = "white", 
+        main="Boxplot of variable Examination:",
+        ylab ="Variable value in % ",
+        xlab="Variable name",
+        outcol="red",
+        outpch=19)
+
+#Histogram of Examination variable from swiss dataset with fitted normal density curve
+
+h1<-hist(swiss$Examination,col="antiquewhite3",main="Histogram of Examination",xlab="Examination");
+xfit<-seq(min(swiss$Examination),max(swiss$Examination),length=40) 
+yfit<-dnorm(xfit,mean=mean(swiss$Examination),sd=sd(swiss$Examination)) 
+yfit <- yfit*diff(h1$mids[1:2])*length(swiss$Examination) 
+lines(xfit, yfit, col="black", lwd=2)
+
+
+#QQ plot of the variable Examination
+qqnorm(swiss$Examination,
+       pch=16,
+       main="Normal QQ-plot of Examination",
+       xlab="Sample quantiles of Examination",
+       ylab="Theoretical quantiles");
+qqline(swiss$Examination, col = 2);
+
+
+#Plotting of the variable Examination with respect to its index.
+plot(Examination,main="Examination")
+```
+
+
+__Histogram:__ The histogram with the density curve clearly shows that maximum frequency of the values lie behind the density curve towards left but the values follow a pattern like the normal variables i.e.first increasing and reaching the highest value and then descending and so the data is from normal population. 
+	
+
+__Boxplot:__  From the box plot we can interpret that the variable Agriculture is slightly right–skewed which we can comment as nearly symmetric, the values of variables are not that dispersed because the length of the two ends of the whiskers is almost equal and the median also lie  almost in the center . And the data of Examination do not contain any outlier.
+
+__QQ Plot:__  The plot clearly shows that most of the values lies along the normal line with two or three values away from the line . So we can interpret that the data is surely from a normal distribution.
+
+__Outliers:__ There is not outlier in the variable under consideration.
+
+\newpage
+\newpage
+
+__Hypothesis testing:__
+
+__Kolmogorov-Smirnov test (Nonparametric test):__
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrr}
+  \hline
+ & D & p-value \\ 
+  \hline
+  & 0.10 & 0.75 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+
+* The observed value of the Shapiro-Wilk statistic is:	D = 0.098924
+
+* The exact probability of the observed value, D = 0.098924,  p-value = 0.7472
+
+* For the Examination, p-value = 0.7472, which is greater than .05. 
+
+
+__Shapiro-Wilk normality test(Parametric test):__
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrr}
+  \hline
+ & W & p-value \\ 
+  \hline
+  & 0.96 & 0.25 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+* The observed value of the Shapiro-Wilk statistic is:	W = 0.96962
+
+* The exact probability of the observed value, W = 0.96962, p-value = 0.2563
+
+* For the Examination, p = 0.2563, which is greater than .05. 
+
+__The parent population is normally distributed.__
+
+\newpage
+
+### __For variable Education:__
+
+```{r,eval=F,echo=F}
+attach(swiss)
+print(paste("Mean of Education:",paste(mean(Education), collapse=" ")))
+print(paste("SD of Education:",paste(sd(Education), collapse=" ")))
+print(paste("Median of Education:",paste(median(Education), collapse=" ")))
+print(paste("IQR of Education:",paste(IQR(Education), collapse=" ")))
+print(paste("Maximum of Education:",paste(max(Education), collapse=" ")))
+print(paste("Minimum of Education:",paste(min(Education), collapse=" ")))
+print(paste("Outliers in Education:",paste(boxplot.stats(Education)$out, collapse=" ")))
+```
+
+__Descriptive Statistics__
+
+* Mean of Education: 10.97
+* SD of Education: 9.61
+* Median of Education:  8
+* IQR of Education: 6
+* Maximum of Education: 53
+* Minimum of Education:  1
+* Outliers in Education: 28, 32, 53, 29 and 29
+
+
+__Stem-and-Leaf plot of Education__
+```{r,echo=F}
+stem(swiss$Education)
+```
+
+We can observe that large amount of the values lies in the  0-10 range and the data does not contains any value in 40-50 range and thus the variable is not continuous, so we can infer that data do not come from the normal population.
+
+\newpage
+
+__Visualization:__
+
+```{r,echo=F, cache=FALSE ,warning=F, fig.width=8, fig.height=6}
+par(mfrow=c(2,2))
+#Locading dataset in R
+#Plotting variable Education in Boxplot
+boxplot(Education,
+        col = "white", 
+        main="Boxplot of variable Education:",
+        ylab ="Variable value in % ",
+        xlab="Variable name",
+        outcol="red",
+        outpch=19)
+
+#Histogram of Education variable from swiss dataset with fitted normal density curve
+
+h1<-hist(swiss$Education,col="antiquewhite3",main="Histogram of Education",xlab="Education");
+xfit<-seq(min(swiss$Education),max(swiss$Education),length=40) 
+yfit<-dnorm(xfit,mean=mean(swiss$Education),sd=sd(swiss$Education)) 
+yfit <- yfit*diff(h1$mids[1:2])*length(swiss$Education) 
+lines(xfit, yfit, col="black", lwd=2)
+
+
+#QQ plot of the variable Education
+qqnorm(swiss$Education,
+       pch=16,
+       main="Normal QQ-plot of Education",
+       xlab="Sample quantiles of Education",
+       ylab="Theoretical quantiles");
+qqline(swiss$Education, col = 2);
+
+
+#Plotting of the variable Education with respect to its index.
+plot(Education,main="Education")
+```
+
+
+__Histogram:__        The histogram with the density curve clearly shows that maximum frequency of the values lie towards extreme right i.e. the values of the variables are positively skewed and so the data is not from normal population. 
+
+__Boxplot:__  From the box plot we can interpret that the variable Education is right–skewed which we can comment as positively skewed variable, the values of variables are not so dispersed because the length of the two ends of the whiskers is almost close to each other and the median also lie  slightly towards right of the center . And the data of Education contains three outlier marked as red dots in the box plot.
+
+__QQ Plot:__  The plot clearly shows that most of the values lie away from the normal line. So we can interpret that the data is not from a normal distribution.
+
+__Outliers:__ Values 28, 32, 53, 29 and 29 are away from the data cloud (in this case extreme in y), so they will be considered as outliers. 
+
+
+\newpage
+
+\newpage
+
+__Hypothesis testing:__
+
+__Kolmogorov-Smirnov test (Nonparametric test):__
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrr}
+  \hline
+ & D & p-value \\ 
+  \hline
+  & 0.25 & 0.01 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+
+* The observed value of the Shapiro-Wilk statistic is: D = 0.24654
+
+* The exact probability of the observed value, D = 0.24654, p-value = 0.006603
+
+* For the Fertility, p-value = 0.006603, which is less than .05. 
+
+
+__Shapiro-Wilk normality test(Parametric test):__
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrr}
+  \hline
+ & W & p-value \\ 
+  \hline
+  & 0.75 & 0.00 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+* The observed value of the Shapiro-Wilk statistic is:	W = 0.7482
+
+* The exact probability of the observed value, W = 0.7482, p-value =  1.312e-07
+
+* For the Education, p = 1.312e-07, which is less than .05. 
+
+__The parent population is not normally distributed.__
+
+
+
+\newpage
+
+### __For variable Catholic:__
+
+```{r,eval=F,echo=F}
+attach(swiss)
+print(paste("Mean of Fertility:",paste(mean(Catholic), collapse=" ")))
+print(paste("SD of Catholic:",paste(sd(Catholic), collapse=" ")))
+print(paste("Median of Catholic:",paste(median(Catholic), collapse=" ")))
+print(paste("IQR of Catholic:",paste(IQR(Catholic), collapse=" ")))
+print(paste("Maximum of Catholic:",paste(max(Catholic), collapse=" ")))
+print(paste("Minimum of Catholic:",paste(min(Catholic), collapse=" ")))
+print(paste("Outliers in Catholic:",paste(boxplot.stats(Catholic)$out, collapse=" ")))
+```
+
+__Descriptive Statistics__
+
+* Mean of Catholic: 41.14
+* SD of Catholic: 41.70
+* Median of Catholic:  15.14
+* IQR of Catholic: 87.93
+* Maximum of Catholic: 100
+* Minimum of Catholic:  2.15
+
+
+
+__Stem-and-Leaf plot of Catholic__
+```{r,echo=F}
+stem(swiss$Catholic)
+```
+
+We can observe that large amount of the values lies in the  0-10 range and in the 90-100 range , the data do not contain any value in 60-70 range and thus the variable is not continuous, so we can infer that data do not come from the normal population.
+
+\newpage
+
+__Visualization:__
+
+```{r,echo=F, cache=FALSE ,warning=F, fig.width=8, fig.height=6}
+par(mfrow=c(2,2))
+#Locading dataset in R
+#Plotting variable Catholic in Boxplot
+boxplot(Catholic,
+        col = "white", 
+        main="Boxplot of variable Catholic:",
+        ylab ="Variable value in % ",
+        xlab="Variable name",
+        outcol="red",
+        outpch=19)
+
+#Histogram of Catholic variable from swiss dataset with fitted normal density curve
+
+h1<-hist(swiss$Catholic,col="antiquewhite3",main="Histogram of Catholic",xlab="Catholic");
+xfit<-seq(min(swiss$Catholic),max(swiss$Catholic),length=40) 
+yfit<-dnorm(xfit,mean=mean(swiss$Catholic),sd=sd(swiss$Catholic)) 
+yfit <- yfit*diff(h1$mids[1:2])*length(swiss$Catholic) 
+lines(xfit, yfit, col="black", lwd=2)
+
+
+#QQ plot of the variable Catholic
+qqnorm(swiss$Catholic,
+       pch=16,
+       main="Normal QQ-plot of Catholic",
+       xlab="Sample quantiles of Catholic",
+       ylab="Theoretical quantiles");
+qqline(swiss$Catholic, col = 2);
+
+
+#Plotting of the variable Catholic with respect to its index.
+plot(Catholic,main="Catholic")
+```
+
+
+__Histogram:__               The histogram with the density curve clearly shows that maximum frequency of the values lie towards extreme right and left i.e. the values form a pattern of inverted U, and we also can observe that the density curve is almost a straight line . Hence , it is clearly seen that the data is not from normal population. 
+
+__Boxplot:__  From the box plot we can interpret that the variable Catholic is right–skewed which we can comment as positively skewed variable, the values of variables are very much dispersed because the length of the two ends of the whiskers is almost far away from each other and the median also lie to the right of the center . And the data Catholic do not contain any outlier .
+
+__QQ Plot:__  The plot clearly shows that almost all the values lie away from the normal line except for two or three. So we can interpret that the data is not from a normal distribution.
+
+__Outliers:__ There is not outlier in the variable under consideration.
+
+\newpage
+
+__Hypothesis testing:__
+
+__Kolmogorov-Smirnov test (Nonparametric test):__
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrr}
+  \hline
+ & D & p-value \\ 
+  \hline
+  & 0.26 & 0.003 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+
+* The observed value of the Kolmogorov-Smirnov statistic is:	0.25994
+
+* The exact probability of the observed value, D = 0.25994, p-value = 0.003488
+
+* For the Catholic, p = 0.003488, which is less than .05. 
+
+
+__Shapiro-Wilk normality test(Parametric test):__
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrr}
+  \hline
+ & W & p-value \\ 
+  \hline
+  & 0.74 & 0.00 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+* The observed value of the Shapiro-Wilk statistic is:	W = 0.7463
+
+* The exact probability of the observed value, W = 0.7463, p-value = 1.205e-07
+
+* For the Catholic, p-value = 0.003488, which is less than .05. 
+
+__The parent population is not normally distributed.__
+
+\newpage
+
+### __For variable Infant Mortality:__
+
+```{r,eval=F,echo=F}
+attach(swiss)
+print(paste("Mean of Fertility:",paste(mean(Infant.Mortality), collapse=" ")))
+print(paste("SD of Infant.Mortality:",paste(sd(Infant.Mortality), collapse=" ")))
+print(paste("Median of Infant.Mortality:",paste(median(Infant.Mortality), collapse=" ")))
+print(paste("IQR of Infant.Mortality:",paste(IQR(Infant.Mortality), collapse=" ")))
+print(paste("Maximum of Infant.Mortality:",paste(max(Infant.Mortality), collapse=" ")))
+print(paste("Minimum of Infant.Mortality:",paste(min(Infant.Mortality), collapse=" ")))
+print(paste("Outliers in Infant.Mortality:",paste(boxplot.stats(Infant.Mortality)$out, collapse=" ")))
+```
+
+__Descriptive Statistics__
+
+* Mean of Infant Mortality: 19.94
+* SD of Infant Mortality: 2.91
+* Median of Infant Mortality:  20
+* IQR of Infant Mortality: 3.55
+* Maximum of Infant Mortality: 26.6
+* Minimum of Infant Mortality:  10.8
+* Outliers in Infant.Mortality: 10.8
+
+
+
+__Stem-and-Leaf plot of Infant Mortality__
+```{r,echo=F}
+stem(swiss$Infant.Mortality)
+```
+
+We can observe that large amount of the values lies in the  180-210 range and the data is randomly distributed in the range 100-270. So we can infer that data come from the normal population.
+\newpage
+
+__Visualization:__
+
+```{r,echo=F, cache=FALSE ,warning=F, fig.width=8, fig.height=6}
+par(mfrow=c(2,2))
+#Locading dataset in R
+#Plotting variable Infant Mortality in Boxplot
+boxplot(Infant.Mortality,
+        col = "white", 
+        main="Boxplot of variable Infant Mortality:",
+        ylab ="Variable value in % ",
+        xlab="Variable name",
+        outcol="red",
+        outpch=19)
+
+#Histogram of Infant Mortality variable from swiss dataset with fitted normal density curve
+
+h1<-hist(swiss$Infant.Mortality,col="antiquewhite3",main="Histogram of Infant Mortality",xlab="Infant Mortality");
+xfit<-seq(min(swiss$Infant.Mortality),max(swiss$Infant.Mortality),length=40) 
+yfit<-dnorm(xfit,mean=mean(swiss$Infant.Mortality),sd=sd(swiss$Infant.Mortality)) 
+yfit <- yfit*diff(h1$mids[1:2])*length(swiss$Infant.Mortality) 
+lines(xfit, yfit, col="black", lwd=2)
+
+
+#QQ plot of the variable Infant Mortality
+qqnorm(swiss$Infant.Mortality,
+       pch=16,
+       main="Normal QQ-plot of Infant.Mortality",
+       xlab="Sample quantiles of Infant Mortality",
+       ylab="Theoretical quantiles");
+qqline(swiss$Infant.Mortality, col = 2);
+
+
+#Plotting of the variable Infant Mortality with respect to its index.
+plot(Infant.Mortality,main="Infant Mortality")
+```
+
+
+__Histogram:__ The histogram with the density curve clearly shows that maximum frequency of the values lie in the center and all the bars are within the density curve. Hence , it is clearly seen that the data is from normal population. 
+
+__Boxplot:__  From the box plot we can interpret that the variable Catholic is slightly left–skewed which we can comment as almost symmetric variable, the values of variables are not much dispersed because the length of the two ends of the whiskers is almost close to each other and the median also lie at the center . And the data Infant.Mortality contain only one outlier  denoted with the red dots in the plot.
+
+__QQ Plot:__  The QQ-plot clearly shows that almost all the values lie along the normal line. So we can interpret that the data is not from a normal distribution.
+
+__Outliers:__ There a outlier in the variable under consideration and that is 10.8.
+
+
+\newpage
+
+__Hypothesis testing:__
+
+__Kolmogorov-Smirnov test (Nonparametric test):__
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrr}
+  \hline
+ & D & p-value \\ 
+  \hline
+  & 0.08 & 0.91 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+
+* The observed value of the  Kolmogorov-Smirnov test statistic is:	D = 0.082197
+
+* The exact probability of the observed value, D = 0.082197, p-value = 0.9086
+
+
+* For the Infant Mortality, p-value = 0.9086, which is greater than .05. 
+
+
+__Shapiro-Wilk normality test(Parametric test):__
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrr}
+  \hline
+ & W & p-value \\ 
+  \hline
+  & 0.97 & 0.49 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+* The observed value of the Shapiro-Wilk statistic is:	W = 0.97762
+
+* The exact probability of the observed value, W = 0.97762, p-value =  0.4978
+
+
+* For the Infant Mortality, p = 0.4978, which is greater than .05. 
+
+__The parent population is not normally distributed.__
+
+
+At the end of the series of conducted test and graphical inspection this can be concluded by both parametric and non-parametric test that __Fertility, Agriculture, Examination and Infant Mortality are from population with  normally distribution__ but __Education and Catholic are from population with any other distrubtion except normal distribution__.
+
+\newpage
+
+### Correlation analysis of the multivariate data: 
+```{r, echo=F,eval=F}
+# #Correlation matrix 
+# par(mfrow=c(1,1))
+# z <- cor(swiss)
+# library(lattice)
+# levelplot(z)
+# require(corrplot)
+# corrplot(z, method = "number",col="black", cl.pos="n")
+
+
+# #Scatter Plot matrix
+# pairsgg<- function(data, mapping, ...){
+#   p <- ggplot(data = data, mapping = mapping) + 
+#     geom_point() + 
+#     geom_smooth(method=lm, fill="blue", color="blue", ...)+
+#     theme_bw()
+#   p
+# }
+# 
+# ggpairs(swiss,columns = 1:6, lower = list(continuous = pairsgg))
+# panel.cor <- function(x, y, digits = 2, cex.cor, ...)
+# {
+#   usr <- par("usr"); on.exit(par(usr))
+#   par(usr = c(0, 1, 0, 1))
+#   # correlation coefficient
+#   r <- cor(x, y)
+#   txt <- format(c(r, 0.123456789), digits = digits)[1]
+#   txt <- paste("r= ", txt, sep = "")
+#   text(0.5, 0.6, txt)
+# 
+#   # p-value calculation
+#   p <- cor.test(x, y)$p.value
+#   txt2 <- format(c(p, 0.123456789), digits = digits)[1]
+#   txt2 <- paste("p= ", txt2, sep = "")
+#   if(p<0.01) txt2 <- paste("p= ", "<0.01", sep = "")
+#   text(0.5, 0.4, txt2)
+# }
+# 
+# pairs(swiss, upper.panel = panel.cor)
+```
+
+```{r,fig.width=9, fig.height=7}
+
+par(mfrow=c(1,1))
+panel.cor <- function(x, y, digits=2, prefix="", cex.cor) 
+{
+  usr <- par("usr"); on.exit(par(usr)) 
+  par(usr = c(0, 1, 0, 1)) 
+  r <- abs(cor(x, y)) 
+  txt <- format(c(r, 0.123456789), digits=digits)[1] 
+  txt <- paste(prefix, txt, sep="") 
+  if(missing(cex.cor)) cex <- 0.8/strwidth(txt) 
+  
+  test <- cor.test(x,y) 
+  # borrowed from printCoefmat
+  Signif <- symnum(test$p.value, corr = FALSE, na = FALSE, 
+                   cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1),
+                   symbols = c("***", "**", "*", ".", " ")) 
+  
+  text(0.5, 0.5, txt, cex = cex * r) 
+  text(.7, .7, Signif, cex=cex, col=2) 
+}
+
+pairs(swiss, lower.panel=panel.smooth, upper.panel=panel.cor)
+
+```
+
+\begin{table}[ht]
+\centering
+\caption{Correlation matrix of swiss data set: } 
+\begin{tabular}{rrrrrr}
+  \\
+  \hline
+Fertility & Agriculture & Examination & Education & Catholic & Infant.Mortality \\ 
+  \hline
+1.000 & 0.353 & -0.646 & -0.664 & 0.464 & 0.417 \\ 
+  0.353 & 1.000 & -0.687 & -0.640 & 0.401 & -0.061 \\ 
+  -0.646 & -0.687 & 1.000 & 0.698 & -0.573 & -0.114 \\ 
+  -0.664 & -0.640 & 0.698 & 1.000 & -0.154 & -0.099 \\ 
+  0.464 & 0.401 & -0.573 & -0.154 & 1.000 & 0.175 \\ 
+  0.417 & -0.061 & -0.114 & -0.099 & 0.175 & 1.000 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+###Pairwise comperison:
+
+__For Fertility and Agriculture :__
+
+__Correlation Coefficien:__
+
+* Estimated Pearson's product-moment correlation is 0.3530792 and corresponding p-value is 0.01492 , So we reject the null hypothesis. 
+
+__For Fertility and Examination :__
+
+
+* Estimated Pearson's product-moment correlation is -0.6458827 and corresponding p-value is 9.45e-07(<.01) , So we reject the null hypothesis. 
+
+__For Fertility and Education :__
+
+
+* Estimated Pearson's product-moment correlation is -0.6637889  and corresponding p-value is 3.659e-07(<0.01) , So we reject the null hypothesis. 
+
+
+__For Fertility and Catholic :__
+
+
+* Estimated Pearson's product-moment correlation is 0.4636847  and corresponding p-value is 0.001029 , So we reject the null hypothesis. 
+
+__For Fertility and Infant Mortality :__
+
+* Estimated Pearson's product-moment correlation is 0.416556 and corresponding p-value is 0.003585 , So we reject the null hypothesis. 
+
+__For Agriculture and Examination :__
+
+* Estimated Pearson's product-moment correlation is -0.6865422 and corresponding p-value is 9.952e-08 (<.01) , So we reject the null hypothesis. 
+
+
+__For Agriculture and Education :__
+
+* Estimated Pearson's product-moment correlation is -0.6395225 and corresponding p-value is  1.305e-06 (<.01) , So we reject the null hypothesis. 
+
+
+ __For Agriculture and Catholic :__
+ 
+* Estimated Pearson's product-moment correlation is 0.4010951 and corresponding p-value is 0.005204 , So we reject the null hypothesis. 
+
+__For Agriculture and Infant Mortality :__
+
+* Estimated Pearson's product-moment correlation is -0.06085861 and corresponding p-value is 0.6845 , So we accept the null hypothesis. 
+
+
+__For Examination and Education :__
+
+* Estimated Pearson's product-moment correlation is 0.6984153 and corresponding p-value is 4.811e-08 (<.01) , So we reject the null hypothesis.
+
+
+__For Examination and Catholic :__
+
+* Estimated Pearson's product-moment correlation is -0.06085861 and corresponding p-value is 2.588e-05 (<.01) , So we reject the null hypothesis.
+
+__For Examination and Infant Mortality :__
+
+* Estimated Pearson's product-moment correlation is -0.1140216 and corresponding p-value is 0.4454 , So we accept the null hypothesis. 
+
+__For Education and Catholic :__
+
+* Estimated Pearson's product-moment correlation is -0.1538589 and corresponding p-value is 0.3018 , So we accept the null hypothesis. 
+
+
+__For Education and Infant Mortality :__
+
+
+* Estimated Pearson's product-moment correlation is -0.09932185 and corresponding p-value is 0.5065 , So we accept the null hypothesis. 
+
+__For Catholic and Infant Mortality :__
+
+
+* Estimated Pearson's product-moment correlation is 0.1754959 and corresponding p-value is 0.238 , So we accept the null hypothesis. 
+
+### __Fitting OLS on Fertility variable by taking Agriculture as independent variable:__
+```{r,echo=F}
+model<-lm(Fertility~Agriculture)
+```
+```{r,echo=F}
+par(mfrow=c(2,3))
+plot(model,which=c(1:6))
+summary(model)
+```
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrr}
+  \hline
+ & Estimate & Std. Error & t value & Pr($>$$|$t$|$) \\ 
+  \hline
+(Intercept) & 60.3044 & 4.2513 & 14.19 & 0.0000 \\ 
+  Agriculture & 0.1942 & 0.0767 & 2.53 & 0.0149 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+
+
+\newpage
+
+Multiple R-squared is the percentage of variance explained by the independent variable in the dependent variable. Adj Multiple R-squared is the adjusted value of the Multiple R-squared by the adjustment factor due to the estimation of the model parameter. Here Agriculture explains only the 10% variance in the Fertility data. Although from the table and summary statistics this can be shown that the intercept is not significant but the $\beta_1$ is significant. Over all the regression is significant shown the the ANOVA table.  
+
+The basic four assumption of regression analysis can be verified from the diagnostic plot of the regression analysis. The outliers and influential points can be diagnose from the diagnostic plot of residuals. The problem of less R-square can be overcomed by considering more variables under study. 
